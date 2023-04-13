@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  
+  <title>Expense tracker</title>
+
+</head>
+<body>
+    <header>
+        <h1>Expense Tracker</h1>
+      </header>
+   
+    <section class="container">
+        <form id="my-form" onsubmit="savetolocalstroage(event)" >
+          
+          <div class="msg"></div>
+          <div>
+            <label for="expenceamount">Choose Expense amount:</label>
+            <input type="number" id="expenceamount" name="amount"  min="1" max="1000">
+          </div>
+          <div>
+            <label for="Description">Write Description:</label>
+            <input type="text" id="Description" name="Description" >
+          </div>
+          <div>
+            <label for="category">Choose a category:</label>
+            <select id="category" name="category">
+            <option value="Fuel">Fuel</option>
+            <option value="Food">Food</option>
+            <option value="Electricity">Electricity</option>
+            <option value="Movie">Movie</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-lg btn-block">Add Expence</button>
+        </form>
+     <ul id="listofdetails"></ul>
+
+
+    <script>
+         function savetolocalstroage(event){
+                event.preventDefault();
+                var amount=event.target.amount.value;
+                var Description=event.target.Description.value;
+                var category=event.target.category.value;
+                details={
+                    amount:amount,
+                    Description:Description,
+                    category:category
+
+                }
+                localStorage.setItem(details.category,JSON.stringify(details));
+                document.getElementById('my-form').reset();
+                 showUserOnScren(details)
+            }
+            window.addEventListener("DOMContentLoaded", () => {
+                const localStorageObj = localStorage;
+                const localstoragekeys  = Object.keys(localStorageObj)
+
+                for(var i =0; i< localstoragekeys.length; i++){
+                    const key = localstoragekeys[i]
+                    const userDetailsString = localStorageObj[key];
+                    const userDetailsObj = JSON.parse(userDetailsString);
+                     showUserOnScren(userDetailsObj)
+                }
+            })
+            function showUserOnScren(user){
+                if(localStorage.getItem(user.category) !== null){
+                    removeUserFromScreen(user.category)
+                }
+                const parentnode=document.getElementById('listofdetails');
+                const  childHtml=`<li id=${user.category}> ${user.amount} - ${user.Describtion}-${user.category}
+                    <button class="btn btn-dark btn-sm" onclick=edituser('${user.Describtion}','${user.amount}','${user.category}')>Edit</button>
+                                        <button  class="btn btn-dark btn-sm" onclick=deleteUser('${user.category}')> Delete Expense </button>
+                                     </li>`;
+                parentnode.innerHTML=parentnode.innerHTML+childHtml;
+            }
+            function deleteUser(category){
+                console.log(category);
+                localStorage.removeItem(category);
+                removeUserFromScreen(category);
+            }
+            function removeUserFromScreen(category){
+                const parentNode = document.getElementById('listofdetails');
+                const childNodeToBeDeleted = document.getElementById(category);
+
+                if(childNodeToBeDeleted) {
+                    parentNode.removeChild(childNodeToBeDeleted);
+                }
+            }
+            function edituser(Describtion,amount,category){
+                document.getElementById('Description').value=Description;
+                document.getElementById('expenceamount').value=amount;
+                document.getElementById('category').value=category;
+               deleteUser(category);
+                
+            }
+    </script>
+</body>
+</html>
